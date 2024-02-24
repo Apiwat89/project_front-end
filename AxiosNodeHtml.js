@@ -2,7 +2,7 @@ const express = require('express');
 const axios = require('axios');
 const app = express();
 const path = require('path');
-var bodyParser = require('body-parser');
+const bodyParser = require('body-parser');
 
 const base_url = "http://localhost:3000";
 // const base_url = "http://node56765-wanichanon.proen.app.ruk-com.cloud";
@@ -14,25 +14,56 @@ app.use(bodyParser.urlencoded({extended: false}));
 
 app.use(express.static(__dirname + '/public'));
 
-app.get("/chords", (req, res) => {
-    res.render("chords");
-});
+// app.get("/chords", async (req, res) => {
+//     res.render("chords");
+// });
 
-app.get("/login", (req, res) => {
+// login
+app.get("/login", async (req, res) => {
     res.render("login");
 });
 
-app.get("/signup",  (req, res) => {
+// ยังบ่เสร็จ
+app.get("/login2", async (req, res) => {
+    try {
+        const response = await axios.get(base_url + "/accounts");
+        if (req.body.username == response.data.username)
+        
+        res.render("shops", { shops: response.data });
+    } catch (err) {
+        console.error(err);
+        res.status(500).send('Error shops guitar')
+    }
+})
+
+// signUp 
+app.get("/signup", async (req, res) => {
     res.render("signup");
 });
 
+app.post("/signup2", async (req, res) => {
+    try {
+        if (req.body.password != req.body.conpass) {
+            res.render("signup");
+        } else {
+            const data = {username: req.body.username, password: req.body.password}
+            await axios.post(base_url + '/accounts', data)
+            res.redirect("/");
+        }
+    } catch (err) {
+        console.error(err);
+        res.status(500).send('Error signUp')
+    }
+});
+
+// shops guitar
 app.get("/", async (req, res) => {
     try {
         const response = await axios.get(base_url + "/shops");
         res.render("shops", { shops: response.data });
     } catch (err) {
         console.error(err);
-        res.status(500).send('Error test')
+        res.status(500).send('Error shops guitar')
     }
 });
 
