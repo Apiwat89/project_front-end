@@ -1,0 +1,67 @@
+.kanit-bold-italic {
+    font-family: "Kanit", sans-serif;
+    font-weight: 700;
+    font-style: italic;
+}
+
+.kanit-bold {
+    font-family: "Kanit", sans-serif;
+    font-weight: 700;
+    font-style: normal;
+}
+
+.kanit-regular-italic {
+    font-family: "Kanit", sans-serif;
+    font-weight: 400;
+    font-style: italic;
+}
+
+.kanit-regular {
+    font-family: "Kanit", sans-serif;
+    font-weight: 400;
+    font-style: normal;
+}
+
+* {
+    font-family: "Kanit", sans-serif;
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* nav */
+.nav {
+    height: 70px;
+    display: flex;
+    align-items: center;
+    flex-direction: row;
+    justify-content: space-between;
+}
+
+.nav img {
+    margin-left: 100px;
+    width: 70px;
+    height: 70px;
+}
+
+.nav ul {
+    width: 50%;
+    list-style: none;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+}
+
+.nav ul a {
+    border-bottom: 2px solid white;
+    font-size: larger;
+    text-decoration: none;
+    color: black;
+    transition: .3s;
+}
+
+.nav ul a:hover {
+    border-bottom: 2px solid #f5c475;
+    text-decoration: none;
+    color: black;
+}
