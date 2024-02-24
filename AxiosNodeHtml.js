@@ -14,20 +14,26 @@ app.use(bodyParser.urlencoded({extended: false}));
 
 app.use(express.static(__dirname + '/public'));
 
-app.get("/", (req, res) => {
-    res.render("shops");
-});
-
 app.get("/chords", (req, res) => {
-    res.render("shops");
+    res.render("chords");
 });
 
 app.get("/login", (req, res) => {
     res.render("login");
 });
 
-app.get("/signup", (req, res) => {
+app.get("/signup",  (req, res) => {
     res.render("signup");
+});
+
+app.get("/", async (req, res) => {
+    try {
+        const response = await axios.get(base_url + "/shops");
+        res.render("shops", { shops: response.data });
+    } catch (err) {
+        console.error(err);
+        res.status(500).send('Error test')
+    }
 });
 
 
