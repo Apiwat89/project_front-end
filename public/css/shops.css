@@ -43,7 +43,7 @@
     justify-content: space-between;
 }
 
-.nav img {
+.nav .logo {
     margin-left: 100px;
     width: 70px;
     height: 70px;
@@ -63,12 +63,30 @@
     text-decoration: none;
     color: black;
     transition: .3s;
+    display: flex;
+    align-items: center;
+}
+
+.shop_btn {
+    width: 50px;
+    height: auto;
+}
+
+.nav ul a .logout_btn {
+    width: 25px;
+    height: 25px;
+    margin-left: 5px;
 }
 
 .nav ul a:hover {
     border-bottom: 2px solid #f5c475;
     text-decoration: none;
     color: black;
+}
+
+.nav ul a li {
+    display: flex;
+    align-items: center;
 }
 
 /* Shop */
@@ -80,15 +98,18 @@
 .item-link {
     text-decoration: none;
     color: inherit;
-    display: contents; /* This makes the <a> tag behave like its contents, allowing the grid layout to be preserved */
+    display: contents;
+    /* This makes the <a> tag behave like its contents, allowing the grid layout to be preserved */
 }
 
 .containner {
     width: 90%;
     margin: auto;
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); /* Adjust the width and minimum width of each column as needed */
-    gap: 20px; /* Adjust the gap between items as needed */
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    /* Adjust the width and minimum width of each column as needed */
+    gap: 20px;
+    /* Adjust the gap between items as needed */
 }
 
 .item-container {

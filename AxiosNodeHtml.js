@@ -20,7 +20,7 @@ app.use(express.static(__dirname + '/public'));
 app.get("/", async (req, res) => {
     try {
         const response = await axios.get(base_url + "/shops");
-        res.render("shops", { shops: response.data, level: req.cookies.level });
+        res.render("shops", { shops: response.data, level: req.cookies.level, username: req.cookies.username });
     } catch (err) {
         console.error(err);
         res.status(500).send('Error guitar')
@@ -31,12 +31,23 @@ app.get("/", async (req, res) => {
 app.get("/guitar_detail/:id", async (req, res) => {
     try {
         const response = await axios.get(base_url + "/shops/" + req.params.id);
-        res.render("guitar_detail", { shop: response.data, level: req.cookies.level});
+        res.render("guitar_detail", { shop: response.data, level: req.cookies.level, username: req.cookies.username});
     } catch (err) {
         console.error(err);
         res.status(500).send('Error guitar detail')
     }
 });
+
+// chords -> chords
+app.get("/chords", async (req,res) => {
+    try {
+        const response = await axios.get(base_url + "/chords");
+        res.render("chords", { chords: response.data, level: req.cookies.level, username: req.cookies.username });
+    } catch {
+        console.error(err);
+        res.status(500).send('Error chord')
+    }
+})
 
 // signUp -> accounts
 app.get("/signup", async (req, res) => res.render("signup" , { Fail: "" }));
@@ -78,6 +89,7 @@ app.post("/login2", async (req, res) => {
                     loginFailed = false; 
                     if (account.level == 'admin') res.cookie('level', 'admin', { maxAge: 900000, httpOnly: true });
                     else if (account.level == 'user') res.cookie('level', 'user', { maxAge: 900000, httpOnly: true });
+                    res.cookie('username', account.username, { maxAge: 900000, httpOnly: true });
                     return res.redirect("/");
                 }
             }
@@ -98,6 +110,7 @@ app.post("/login2", async (req, res) => {
 app.get("/logout", async (req, res) => {
     try {
         res.clearCookie('level');
+        res.clearCookie('username');
         return res.redirect("/");
     } catch (err) {
         console.error(err);
@@ -105,4 +118,4 @@ app.get("/logout", async (req, res) => {
     }
 })
 
-app.listen(5500, () => {console.log('Server stated on port 5500');});
+app.listen(5500, () => {console.log('Server stated on http://localhost:5500');});
