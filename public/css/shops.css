@@ -77,6 +77,12 @@
     margin-top: 100px;
 }
 
+.item-link {
+    text-decoration: none;
+    color: inherit;
+    display: contents; /* This makes the <a> tag behave like its contents, allowing the grid layout to be preserved */
+}
+
 .containner {
     width: 90%;
     margin: auto;

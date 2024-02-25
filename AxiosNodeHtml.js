@@ -25,6 +25,17 @@ app.get("/", async (req, res) => {
     }
 });
 
+// guitar_details -> shops
+app.get("/guitar_detail/:id", async (req, res) => {
+    try {
+        const response = await axios.get(base_url + "/shops/" + req.params.id);
+        res.render("guitar_detail", { shop: response.data });
+    } catch (err) {
+        console.error(err);
+        res.status(500).send('Error guitar detail')
+    }
+});
+
 // signUp -> accounts
 app.get("/signup", async (req, res) => res.render("signup"));
 app.post("/signup2", async (req, res) => {
