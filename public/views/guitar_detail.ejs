@@ -13,21 +13,13 @@
 </head>
 
 <body>
-    <header class="nav-container">
-        <nav class="nav">
-            <img src="../assets/logo.png" alt="" />
-            <ul>
-                <a href="/"><li>Shops</li></a>
-                <a href="/chords"><li>Chords</li></a>
-                <a href="/login"><li>Login</li></a>
-            </ul>
-        </nav>
-    </header>
+    <%- include('nav.ejs', {level: level}) -%>
 
     <article class="main-shop">
         <img src="../pictures/<%= shop.guitarURL %>" alt="">
         <p><%= shop.guitarname %></p>
         <p><%= shop.price %></p>
+        <p><%= shop.detail %></p>
     </article>
     
 </body>

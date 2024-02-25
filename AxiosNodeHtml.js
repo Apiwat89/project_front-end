@@ -3,10 +3,12 @@ const axios = require('axios');
 const app = express();
 const path = require('path');
 const bodyParser = require('body-parser');
+const cookieParser = require('cookie-parser');
 
 const base_url = "http://localhost:3000";
 // const base_url = "http://node56765-wanichanon.proen.app.ruk-com.cloud";
 
+app.use(cookieParser());
 app.set("views", path.join(__dirname, "/public/views"));
 app.set('view engine', 'ejs');
 app.use(bodyParser.json());
@@ -18,7 +20,7 @@ app.use(express.static(__dirname + '/public'));
 app.get("/", async (req, res) => {
     try {
         const response = await axios.get(base_url + "/shops");
-        res.render("shops", { shops: response.data });
+        res.render("shops", { shops: response.data, level: req.cookies.level });
     } catch (err) {
         console.error(err);
         res.status(500).send('Error guitar')
@@ -29,7 +31,7 @@ app.get("/", async (req, res) => {
 app.get("/guitar_detail/:id", async (req, res) => {
     try {
         const response = await axios.get(base_url + "/shops/" + req.params.id);
-        res.render("guitar_detail", { shop: response.data });
+        res.render("guitar_detail", { shop: response.data, level: req.cookies.level});
     } catch (err) {
         console.error(err);
         res.status(500).send('Error guitar detail')
@@ -37,16 +39,25 @@ app.get("/guitar_detail/:id", async (req, res) => {
 });
 
 // signUp -> accounts
-app.get("/signup", async (req, res) => res.render("signup"));
+app.get("/signup", async (req, res) => res.render("signup" , { Fail: "" }));
 app.post("/signup2", async (req, res) => {
     try {
+        const response = await axios.get(base_url + "/accounts");
+        const accounts = response.data;
+
         if (req.body.password != req.body.conpass) {
-            res.render("signup");
-        } else {
-            const data = {username: req.body.username, password: req.body.password}
-            await axios.post(base_url + '/accounts', data)
-            res.redirect("/");
+            return res.render("signup", { Fail: "รหัสผ่านไม่ตรงกัน"});
         }
+
+        const checkaccount = accounts.find(account => account.username === req.body.username);
+        if (checkaccount) {
+            return res.render("signup", { Fail: "Username ซ้ำ"});
+        } 
+
+        const data = {username: req.body.username, password: req.body.password}
+        await axios.post(base_url + '/accounts', data)
+        res.redirect("/");
+
     } catch (err) {
         console.error(err);
         res.status(500).send('Error signUp')
@@ -54,24 +65,43 @@ app.post("/signup2", async (req, res) => {
 });
 
 // login -> accounts
-app.get("/login", async (req, res) => res.render("login"));
+app.get("/login", async (req, res) => res.render("login", { Fail: "", success: ""}));
 app.post("/login2", async (req, res) => {
     try {
         const response = await axios.get(base_url + "/accounts");
         const accounts = response.data;
+        let loginFailed = true; 
+
         if (accounts && accounts.length > 0) {
             for (const account of accounts) {
-                if (req.body.username === account.username) {
-                    if (req.body.password === account.password) {
-                        return res.redirect("/");
-                    }
+                if (req.body.username === account.username && req.body.password === account.password) {
+                    loginFailed = false; 
+                    if (account.level == 'admin') res.cookie('level', 'admin', { maxAge: 900000, httpOnly: true });
+                    else if (account.level == 'user') res.cookie('level', 'user', { maxAge: 900000, httpOnly: true });
+                    return res.redirect("/");
                 }
             }
+        } else {
+            return res.redirect("signup");
         }
-        res.render("login");
+
+        if (loginFailed) {
+            return res.render("login", { Fail: "ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง", success: ""});
+        }
     } catch (err) {
         console.error(err);
         res.status(500).send('Error Login')
+    }
+})
+
+// logout
+app.get("/logout", async (req, res) => {
+    try {
+        res.clearCookie('level');
+        return res.redirect("/");
+    } catch (err) {
+        console.error(err);
+        res.status(500).send('Error Logout')
     }
 })
 

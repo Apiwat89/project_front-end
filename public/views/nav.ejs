@@ -1,0 +1,21 @@
+<header class="nav-container">
+    <nav class="nav">
+        <img src="../assets/logo.png" alt="" />
+        <ul>
+            <% if (level=='user' ) { %>
+                <a href="/"><li>Shops</li></a>
+                <a href="/chords"><li>Chords</li></a>
+                <a href="/logout"><li>logout</li></a>
+            <% } else if (level=='admin' ) { %>
+                <a href="/"><li>Shops</li></a>
+                <a href="/chords"><li>Chords</li></a>
+                <a href="/"><li>admin</li></a>
+                <a href="/logout"><li>logout</li></a>
+            <% } else { %>
+                <a href="/"><li>Shops</li></a>
+                <a href="/chords"><li>Chords</li></a>
+                <a href="/login"><li>Login</li></a>
+            <% } %>
+        </ul>
+    </nav>
+</header>
