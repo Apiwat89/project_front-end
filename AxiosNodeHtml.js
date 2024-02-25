@@ -14,33 +14,19 @@ app.use(bodyParser.urlencoded({extended: false}));
 
 app.use(express.static(__dirname + '/public'));
 
-// app.get("/chords", async (req, res) => {
-//     res.render("chords");
-// });
-
-// login
-app.get("/login", async (req, res) => {
-    res.render("login");
-});
-
-// ยังบ่เสร็จ
-app.get("/login2", async (req, res) => {
+// guitar -> shops
+app.get("/", async (req, res) => {
     try {
-        const response = await axios.get(base_url + "/accounts");
-        if (req.body.username == response.data.username)
-        
+        const response = await axios.get(base_url + "/shops");
         res.render("shops", { shops: response.data });
     } catch (err) {
         console.error(err);
         res.status(500).send('Error shops guitar')
     }
-})
-
-// signUp 
-app.get("/signup", async (req, res) => {
-    res.render("signup");
 });
 
+// signUp -> accounts
+app.get("/signup", async (req, res) => res.render("signup"));
 app.post("/signup2", async (req, res) => {
     try {
         if (req.body.password != req.body.conpass) {
@@ -56,76 +42,27 @@ app.post("/signup2", async (req, res) => {
     }
 });
 
-// shops guitar
-app.get("/", async (req, res) => {
+// login -> accounts
+app.get("/login", async (req, res) => res.render("login"));
+app.post("/login2", async (req, res) => {
     try {
-        const response = await axios.get(base_url + "/shops");
-        res.render("shops", { shops: response.data });
+        const response = await axios.get(base_url + "/accounts");
+        const accounts = response.data;
+        if (accounts && accounts.length > 0) {
+            for (const account of accounts) {
+                if (req.body.username === account.username) {
+                    if (req.body.password === account.password) {
+                        res.redirect("/");
+                        return;
+                    }
+                }
+            }
+        }
+        res.render("login");
     } catch (err) {
         console.error(err);
         res.status(500).send('Error shops guitar')
     }
-});
+})
 
-
-
-// app.get("/book/:id", async (req, res) => {
-//     try {
-//         const response = await axios.get(base_url + '/books/' + req.params.id);
-//         res.render("book", {book: response.data});
-//     } catch(err) {
-//         console.error(err);
-//         res.status(500).send('Error');
-//     }
-// });
-
-// app.get("/create", (req, res) => {
-//     res.render("create");
-// });
-
-// app.post("/create", async (req, res) => {
-//     try {
-//         const data = {title: req.body.title, author: req.body.author};
-//         await axios.post(base_url + '/books', data);
-//         res.redirect("/");
-//     } catch (err) {
-//         console.error(err);
-//         res.status(500).send('Error');
-//     }
-// });
-
-// app.get("/update/:id", async (req, res) => {
-//     try {
-//         const response = await axios.get(
-//         base_url + '/books/' + req.params.id);
-//         res.render("update", {book: response.data});  
-//     } catch(err) {
-//         console.error(err);
-//         res.status(500).send('Error');
-//     }
-// });
-
-// app.post("/update/:id", async (req, res) => {
-//     try {
-//         const data = {title: req.body.title, author: req.body.author};
-//         await axios.put(base_url + '/books/' + req.params.id, data);
-//         res.redirect("/");
-//     } catch(err) {
-//         console.error(err);
-//         res.status(500).send('Error');
-//     }
-// });
-
-// app.get("/delete/:id", async (req, res) => {
-//     try {
-//         await axios.delete(base_url + '/books/' + req.params.id);
-//         res.redirect("/");
-//     } catch(err) {
-//         console.error(err);
-//         res.status(500).send('Error');
-//     }
-// });
-
-app.listen(5500, () => {
-    console.log('Server stated on port 5500');
-});
+app.listen(5500, () => {console.log('Server stated on port 5500');});
