@@ -4,11 +4,11 @@ const app = express();
 const path = require('path');
 const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
+const multer  = require('multer');
 
 const base_url = "http://localhost:3000";
 // const base_url = "http://node56765-wanichanon.proen.app.ruk-com.cloud";
 
-app.use(cookieParser());
 app.set("views", path.join(__dirname, "/public/views"));
 app.set('view engine', 'ejs');
 app.use(bodyParser.json());
@@ -16,7 +16,31 @@ app.use(bodyParser.urlencoded({extended: false}));
 
 app.use(express.static(__dirname + '/public'));
 
-// list guitar -> shops
+app.use(cookieParser());
+
+// auto img 
+const putguitar = multer.diskStorage({
+    destination: function (req, file, cb) {
+        cb(null, path.join(__dirname, './public/pictures/Guitar'));
+    },
+    filename: function (req, file, cb) {
+        cb(null, file.originalname);
+    }
+});
+
+const putchord = multer.diskStorage({
+    destination: function (req, file, cb) {
+        cb(null, path.join(__dirname, './public/pictures/Chord'));
+    },
+    filename: function (req, file, cb) {
+        cb(null, file.originalname);
+    }
+});
+
+const guitar = multer({ storage: putguitar });
+const chord = multer({ storage: putchord });
+
+// [PAGE] list guitar -> shops
 app.get("/", async (req, res) => {
     try {
         const response = await axios.get(base_url + "/shops");
@@ -27,7 +51,7 @@ app.get("/", async (req, res) => {
     }
 });
 
-// details guitar -> shops
+// [PAGE] details guitar -> shops
 app.get("/guitar_detail/:id", async (req, res) => {
     try {
         const response = await axios.get(base_url + "/shops/" + req.params.id);
@@ -38,7 +62,7 @@ app.get("/guitar_detail/:id", async (req, res) => {
     }
 });
 
-// chords -> chords
+// [PAGE] chords -> chords
 app.get("/chords", async (req,res) => {
     try {
         const response = await axios.get(base_url + "/chords");
@@ -49,17 +73,197 @@ app.get("/chords", async (req,res) => {
     }
 })
 
-// management -> !!!!!!!!!!!
-// app.get("/management", async (req,res) => {
-//     try {
+// [PAGE] management
+app.get("/management", async (req,res) => {
+    try {
+        if (req.cookies.level == 'user') {
+            res.redirect("/");
+        } else if (req.cookies.level == 'admin') {
+            res.render("management", { level: req.cookies.level, username: req.cookies.username , Fail: ""});
+        } else {
+            res.redirect("/");
+        }
+    } catch {
+        console.error(err);
+        res.status(500).send('Error management')
+    }
+})
 
-//     } catch {
-//         console.error(err);
-//         res.status(500).send('Error management')
-//     }
-// })
+// updateRole -> accounts
+app.post("/updateRole", async (req,res) => {
+    try {
+        if (req.body.username == '') {
+            return res.render("management", { Fail: "กรุณาใส่ชื่อ user", level: req.cookies.level, username: req.cookies.username});
+        }
 
-// signUp -> accounts
+        const response = await axios.get(base_url + "/accounts");
+        const accounts = response.data;
+        let RoleFailed = true; 
+
+        for (const account of accounts) {
+            if (req.body.username === account.username) {
+                RoleFailed = false; 
+                const data = { level: req.body.role };
+                await axios.put(base_url + '/accounts/' + account.id_account, data);
+                return res.redirect("/");
+            }
+        }
+
+        if (RoleFailed) {
+            return res.render("management", { Fail: "ไม่สามารถเปลี่ยน Role ได้ username อาจไม่ถูกต้อง", level: req.cookies.level, username: req.cookies.username});
+        }
+    } catch {
+        console.error(err);
+        res.status(500).send('Error management')
+    }
+})
+
+// createGuitar -> shops
+app.post('/createGuitar', guitar.single('guitarURL'), async (req, res) => {
+    try {
+        if (req.body.guitarname == '') {
+            return res.render("management", { Fail: "กรุณาใส่ชื่อ guitar", level: req.cookies.level, username: req.cookies.username});
+        } else if (req.body.price == '') {
+            return res.render("management", { Fail: "กรุณาใส่ price", level: req.cookies.level, username: req.cookies.username});
+        } else if (req.body.detail == '') {
+            return res.render("management", { Fail: "กรุณาใส่ detail", level: req.cookies.level, username: req.cookies.username});
+        } else if (!req.file || !req.file.filename) {
+            return res.render("management", { Fail: "กรุณาใส่รูปภาพ guitar", level: req.cookies.level, username: req.cookies.username});
+        }
+
+        const data = {
+            guitarURL: req.file.filename,
+            guitarname: req.body.guitarname,
+            price: req.body.price,
+            detail: req.body.detail
+        };
+
+        await axios.post(base_url + '/shops' , data);
+        return res.redirect("/");
+    } catch (err) {
+        console.error(err);
+        res.status(500).send('Error putIMG');
+    }
+});
+
+// updateGuitar -> shops
+app.post('/updateGuitar', async (req, res) => {
+    try {
+        if (req.body.guitarname == '') {
+            return res.render("management", { Fail: "กรุณาใส่ชื่อ guitar", level: req.cookies.level, username: req.cookies.username});
+        } else if (req.body.new_guitarname == '') {
+            return res.render("management", { Fail: "กรุณาใส่ชื่อ guitar ใหม่", level: req.cookies.level, username: req.cookies.username});
+        } else if (req.body.price == '') {
+            return res.render("management", { Fail: "กรุณาใส่ price", level: req.cookies.level, username: req.cookies.username});
+        } else if (req.body.detail == '') {
+            return res.render("management", { Fail: "กรุณาใส่ detail", level: req.cookies.level, username: req.cookies.username});
+        }
+        
+        const response = await axios.get(base_url + "/shops");
+        const shops = response.data;
+        let guitarFailed = true; 
+
+        for (const shop of shops) {
+            if (req.body.guitarname === shop.guitarname) {
+                guitarFailed = false; 
+                const data = {
+                    guitarname: req.body.new_guitarname != '' ? req.body.new_guitarname : req.body.guitarname,
+                    price: req.body.price,
+                    detail: req.body.detail
+                };
+                await axios.put(base_url + '/shops/' + shop.id_guitar, data);
+                return res.redirect("/");
+            }
+        }
+
+        if (guitarFailed) {
+            return res.render("management", { Fail: "ไม่สามารถแก้ไขข้อมูล guitar ได้ guitarname อาจไม่ถูกต้อง", level: req.cookies.level, username: req.cookies.username});
+        }
+    } catch (err) {
+        console.error(err);
+        res.status(500).send('Error putIMG');
+    }
+});
+
+// deleteGuitar -> shops
+app.post('/deleteGuitar', async (req, res) => {
+    try {
+        if (req.body.guitarname == '') {
+            return res.render("management", { Fail: "กรุณาใส่ชื่อ guitar", level: req.cookies.level, username: req.cookies.username});
+        } 
+        
+        const response = await axios.get(base_url + "/shops");
+        const shops = response.data;
+        let guitarFailed = true; 
+
+        for (const shop of shops) {
+            if (req.body.guitarname === shop.guitarname) {
+                guitarFailed = false; 
+                await axios.delete(base_url + '/shops/' + shop.id_guitar);
+                return res.redirect("/");
+            }
+        }
+
+        if (guitarFailed) {
+            return res.render("management", { Fail: "ไม่สามารถลบ guitar ได้ guitarname อาจไม่ถูกต้อง", level: req.cookies.level, username: req.cookies.username});
+        }
+    } catch (err) {
+        console.error(err);
+        res.status(500).send('Error putIMG');
+    }
+});
+
+// createChord -> chords
+app.post('/createChord', chord.single('datachord'), async (req, res) => {
+    try {
+        if (req.body.chordname == '') {
+            return res.render("management", { Fail: "กรุณาใส่ชื่อ chord", level: req.cookies.level, username: req.cookies.username});
+        } else if (!req.file || !req.file.filename) {
+            return res.render("management", { Fail: "กรุณาใส่รูปภาพ chord", level: req.cookies.level, username: req.cookies.username});
+        } 
+
+        const data = {
+            chordname: req.body.chordname,
+            datachord: req.file.filename,
+        };
+
+        await axios.post(base_url + '/chords' , data);
+        return res.redirect("/");
+    } catch (err) {
+        console.error(err);
+        res.status(500).send('Error putIMG');
+    }
+});
+
+// deleteChord -> chords
+app.post('/deleteChord', async (req, res) => {
+    try {
+        if (req.body.chordname == '') {
+            return res.render("management", { Fail: "กรุณาใส่ชื่อ chord", level: req.cookies.level, username: req.cookies.username});
+        } 
+        
+        const response = await axios.get(base_url + "/chords");
+        const chords = response.data;
+        let chordFailed = true; 
+
+        for (const chord of chords) {
+            if (req.body.chordname === chord.chordname) {
+                chordFailed = false; 
+                await axios.delete(base_url + '/chords/' + chord.id_chord);
+                return res.redirect("/");
+            }
+        }
+
+        if (chordFailed) {
+            return res.render("management", { Fail: "ไม่สามารถลบ chord ได้ chordname อาจไม่ถูกต้อง", level: req.cookies.level, username: req.cookies.username});
+        }
+    } catch (err) {
+        console.error(err);
+        res.status(500).send('Error putIMG');
+    }
+});
+
+// [PAGE] signUp
 app.get("/signup", async (req, res) => {
     try {
         res.render("signup" , { Fail: "" })
@@ -69,6 +273,7 @@ app.get("/signup", async (req, res) => {
     }
 });
 
+// signup2 -> accounts
 app.post("/signup2", async (req, res) => {
     try {
         const response = await axios.get(base_url + "/accounts");
@@ -86,14 +291,13 @@ app.post("/signup2", async (req, res) => {
         const data = {username: req.body.username, password: req.body.password}
         await axios.post(base_url + '/accounts', data)
         res.redirect("/");
-
     } catch (err) {
         console.error(err);
         res.status(500).send('Error signUp')
     }
 });
 
-// login -> accounts
+// [PAGE] login
 app.get("/login", async (req, res) => {
     try {
         res.render("login", { Fail: ""})
@@ -103,6 +307,7 @@ app.get("/login", async (req, res) => {
     }
 });
 
+// login2 -> accounts
 app.post("/login2", async (req, res) => {
     try {
         const response = await axios.get(base_url + "/accounts");
