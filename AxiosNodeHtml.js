@@ -21,7 +21,7 @@ app.get("/", async (req, res) => {
         res.render("shops", { shops: response.data });
     } catch (err) {
         console.error(err);
-        res.status(500).send('Error shops guitar')
+        res.status(500).send('Error guitar')
     }
 });
 
@@ -52,8 +52,7 @@ app.post("/login2", async (req, res) => {
             for (const account of accounts) {
                 if (req.body.username === account.username) {
                     if (req.body.password === account.password) {
-                        res.redirect("/");
-                        return;
+                        return res.redirect("/");
                     }
                 }
             }
@@ -61,7 +60,7 @@ app.post("/login2", async (req, res) => {
         res.render("login");
     } catch (err) {
         console.error(err);
-        res.status(500).send('Error shops guitar')
+        res.status(500).send('Error Login')
     }
 })
 
