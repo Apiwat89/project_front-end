@@ -7,13 +7,23 @@
     <title>Guitar Shop</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Kanit:ital,wght@0,400;0,700;1,400;1,700&display=swap"
-        rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Kanit:ital,wght@0,400;0,700;1,400;1,700&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="css/shops.css" type="text/css" />
 </head>
 
 <body>
     <%- include('nav.ejs', {level: level, username: username}) -%>
+
+    <article class="main-chord">
+        <div class="containner">
+            <% for (var i = 0; i < chords.length; i++) { %>
+                <div class="item-container">
+                <img src="pictures/Chord/<%= chords[i].datachord %>" alt="">
+                <p><%= chords[i].chordname %></p>
+            </div>
+            <% } %>
+        </div>
+    </article>
 </body>
 
 </html>

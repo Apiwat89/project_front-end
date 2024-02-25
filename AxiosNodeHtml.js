@@ -16,25 +16,25 @@ app.use(bodyParser.urlencoded({extended: false}));
 
 app.use(express.static(__dirname + '/public'));
 
-// guitar -> shops
+// list guitar -> shops
 app.get("/", async (req, res) => {
     try {
         const response = await axios.get(base_url + "/shops");
         res.render("shops", { shops: response.data, level: req.cookies.level, username: req.cookies.username });
     } catch (err) {
         console.error(err);
-        res.status(500).send('Error guitar')
+        res.status(500).send('Error list guitar')
     }
 });
 
-// guitar_details -> shops
+// details guitar -> shops
 app.get("/guitar_detail/:id", async (req, res) => {
     try {
         const response = await axios.get(base_url + "/shops/" + req.params.id);
         res.render("guitar_detail", { shop: response.data, level: req.cookies.level, username: req.cookies.username});
     } catch (err) {
         console.error(err);
-        res.status(500).send('Error guitar detail')
+        res.status(500).send('Error detail guitar')
     }
 });
 
@@ -49,8 +49,26 @@ app.get("/chords", async (req,res) => {
     }
 })
 
+// management -> !!!!!!!!!!!
+// app.get("/management", async (req,res) => {
+//     try {
+
+//     } catch {
+//         console.error(err);
+//         res.status(500).send('Error management')
+//     }
+// })
+
 // signUp -> accounts
-app.get("/signup", async (req, res) => res.render("signup" , { Fail: "" }));
+app.get("/signup", async (req, res) => {
+    try {
+        res.render("signup" , { Fail: "" })
+    } catch {
+        console.error(err);
+        res.status(500).send('Error signup')
+    }
+});
+
 app.post("/signup2", async (req, res) => {
     try {
         const response = await axios.get(base_url + "/accounts");
@@ -76,7 +94,15 @@ app.post("/signup2", async (req, res) => {
 });
 
 // login -> accounts
-app.get("/login", async (req, res) => res.render("login", { Fail: "", success: ""}));
+app.get("/login", async (req, res) => {
+    try {
+        res.render("login", { Fail: ""})
+    } catch {
+        console.error(err);
+        res.status(500).send('Error signup')
+    }
+});
+
 app.post("/login2", async (req, res) => {
     try {
         const response = await axios.get(base_url + "/accounts");
@@ -98,7 +124,7 @@ app.post("/login2", async (req, res) => {
         }
 
         if (loginFailed) {
-            return res.render("login", { Fail: "ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง", success: ""});
+            return res.render("login", { Fail: "ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง"});
         }
     } catch (err) {
         console.error(err);

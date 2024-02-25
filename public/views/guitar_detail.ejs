@@ -7,8 +7,7 @@
     <title><%= shop.guitarname %></title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/cs2?family=Kanit:ital,wght@0,400;0,700;1,400;1,700&display=swap"
-        rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Kanit:ital,wght@0,400;0,700;1,400;1,700&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="../css/shops.css" type="text/css" />
 </head>
 
@@ -16,12 +15,15 @@
     <%- include('nav.ejs', {level: level, username: username}) -%>
 
     <article class="main-shop">
-        <img src="../pictures/<%= shop.guitarURL %>" alt="">
+        <img src="../pictures/Guitar/<%= shop.guitarURL %>" alt="">
         <p><%= shop.guitarname %></p>
         <p><%= shop.price %></p>
         <p><%= shop.detail %></p>
+        <div class="button-container">
+            <a href="#" class="button">Buy</a>
+            <a href="#" class="button">Add to Cart</a>
+        </div>
     </article>
-    
 </body>
 
 </html>
