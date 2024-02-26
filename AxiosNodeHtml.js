@@ -253,6 +253,44 @@ app.get("/MMchord", async (req,res) => {
     }
 })
 
+// MMchordCreate -> chords
+app.get('/MMchordCreate', async (req, res) => {
+    try {
+        if (req.cookies.level == 'user') {
+            res.redirect("/");
+        } else if (req.cookies.level == 'admin') {
+            res.render("MMchordCreate", { level: req.cookies.level, username: req.cookies.username});
+        } else {
+            res.redirect("/");
+        }
+    } catch (err) {
+        console.error(err);
+        res.status(500).send('Error MMchordCreate');
+    }
+});
+
+// MMchordCreate2 -> chords
+app.post('/MMchordCreate2', chord.single('datachord'), async (req, res) => {
+    try {
+        if (req.cookies.level == 'user') {
+            res.redirect("/");
+        } else if (req.cookies.level == 'admin') {
+            const data = {
+                chordname: req.body.chordname,
+                datachord: req.file.filename
+            };
+    
+            await axios.post(base_url + '/chords' , data);
+            return res.redirect("/MMchord");
+        } else {
+            res.redirect("/");
+        }
+    } catch (err) {
+        console.error(err);
+        res.status(500).send('Error MMchordCreate2');
+    }
+});
+
 // MMchordEdit -> chords
 app.get("/MMchordEdit/:id", async (req,res) => {
     try {
