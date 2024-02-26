@@ -82,9 +82,9 @@ body {
 }
 
 .nav ul a:hover {
+    color: #f5c475;
     border-bottom: 2px solid #f5c475;
     text-decoration: none;
-    color: black;
 }
 
 .nav ul a li {

@@ -30,28 +30,6 @@ body {
     box-sizing: border-box;
 }
 
-.login-container input[type="submit"],
-.login-container input[type="button"],
-.login-container input[type="reset"] {
-    width: 100px;
-    padding: 10px;
-    margin: 10px 0;
-    border: none;
-    border-radius: 5px;
-    background-color: #f5c475;
-    color: #fff;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-}
-
-.login-container input[type="submit"]:hover,
-.login-container input[type="button"]:hover,
-.login-container input[type="reset"]:hover
- {
-    
-    background-color: #f1cc91;
-    
-}
 .boxBTN{
     display: flex;
     justify-content: space-between;
