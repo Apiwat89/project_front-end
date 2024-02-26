@@ -216,6 +216,15 @@ app.get('/MMguitarDelete/:id', async (req, res) => {
         if (req.cookies.level == 'user') {
             res.redirect("/");
         } else if (req.cookies.level == 'admin') {
+            const response = await axios.get(base_url + '/list');
+            const lists = response.data;
+
+            for (let check of lists) {
+                if (check.id_guitar == req.params.id) {
+                    await axios.delete(base_url + '/list/' + check.list);
+                }
+            }
+
             await axios.delete(base_url + '/shops/' + req.params.id);
             res.redirect("/management");
         } else {
@@ -420,25 +429,23 @@ app.get('/MMlist', async (req, res) => {
             const response = await axios.get(base_url + "/lists");
             const lists = response.data;
 
-            let accounts = [];
-            for (let list of lists) {
-                const response2 = await axios.get(base_url + "/accounts/" + list.id_account);
-                const account = response2.data;
-                accounts.push(account);
+            if (lists && lists.length > 0) {
+                let accounts = [];
+                for (let list of lists) {
+                    const response2 = await axios.get(base_url + "/accounts/" + list.id_account);
+                    const account = response2.data;
+                    accounts.push(account);
+                }
+                res.render("MMlist", { lists: lists, accounts: accounts, level: req.cookies.level, username: req.cookies.username});
+            } else {
+                res.render("MMlist", { lists: '', accounts: '', level: req.cookies.level, username: req.cookies.username});
             }
-
-            res.render("MMlist", { lists: lists, accounts: accounts, level: req.cookies.level, username: req.cookies.username});
         } else {
             res.redirect("/");
         }
     } catch (err) {
-        if (req.cookies.level == 'user') {
-            res.redirect("/");
-        } else if (req.cookies.level == 'admin') {
-            res.render("MMlist", { lists: '', accounts: '', level: req.cookies.level, username: req.cookies.username});
-        } else {
-            res.redirect("/");
-        }
+        console.error(err);
+        res.status(500).send('Error MMlist');
     }
 });
 

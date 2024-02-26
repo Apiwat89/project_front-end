@@ -53,7 +53,10 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <% for (let i=0; i < lists.length; i++) { %>
+                    <% 
+                        if (lists != '') {
+                            for (let i=0; i < lists.length; i++) { 
+                    %>
                         <tr>
                             <td><%= i+1 %></td>
                             <td><%= accounts[i].username %></td>
@@ -62,7 +65,7 @@
                                 <a href="/MMlistDelete/<%= lists[i].list %>" class="btn btn-success btn-sm">Accept</a>
                             </td>
                         </tr>
-                    <% } %>
+                    <% } } %>
                 </tbody>
             </table>
         </div>
