@@ -73,13 +73,14 @@ app.get("/chords", async (req,res) => {
     }
 })
 
-// [PAGE] management
+// [PAGE] management -> shops
 app.get("/management", async (req,res) => {
     try {
         if (req.cookies.level == 'user') {
             res.redirect("/");
         } else if (req.cookies.level == 'admin') {
-            res.render("management", { level: req.cookies.level, username: req.cookies.username , Fail: ""});
+            const response = await axios.get(base_url + "/shops");
+            res.render("management", { shops: response.data, level: req.cookies.level, username: req.cookies.username, Fail: "" });
         } else {
             res.redirect("/");
         }
@@ -89,179 +90,345 @@ app.get("/management", async (req,res) => {
     }
 })
 
-// updateRole -> accounts
-app.post("/updateRole", async (req,res) => {
+// [PAGE] MMguitarCreate -> shops
+app.get('/MMguitarCreate', async (req, res) => {
     try {
-        if (req.body.username == '') {
-            return res.render("management", { Fail: "กรุณาใส่ชื่อ user", level: req.cookies.level, username: req.cookies.username});
+        if (req.cookies.level == 'user') {
+            res.redirect("/");
+        } else if (req.cookies.level == 'admin') {
+            res.render("MMguitarCreate", { level: req.cookies.level, username: req.cookies.username});
+        } else {
+            res.redirect("/");
         }
+    } catch (err) {
+        console.error(err);
+        res.status(500).send('Error putIMG');
+    }
+});
 
-        const response = await axios.get(base_url + "/accounts");
-        const accounts = response.data;
-        let RoleFailed = true; 
-
-        for (const account of accounts) {
-            if (req.body.username === account.username) {
-                RoleFailed = false; 
-                const data = { level: req.body.role };
-                await axios.put(base_url + '/accounts/' + account.id_account, data);
-                return res.redirect("/");
-            }
+// MMguitarCreate2 -> shops
+app.post('/MMguitarCreate2', guitar.single('guitarURL'), async (req, res) => {
+    try {
+        if (req.cookies.level == 'user') {
+            res.redirect("/");
+        } else if (req.cookies.level == 'admin') {
+            const data = {
+                guitarURL: req.file.filename,
+                guitarname: req.body.guitarname,
+                price: req.body.price,
+                detail: req.body.detail
+            };
+    
+            await axios.post(base_url + '/shops' , data);
+            return res.redirect("/management");
+        } else {
+            res.redirect("/");
         }
+    } catch (err) {
+        console.error(err);
+        res.status(500).send('Error MMguitarCreate2');
+    }
+});
 
-        if (RoleFailed) {
-            return res.render("management", { Fail: "ไม่สามารถเปลี่ยน Role ได้ username อาจไม่ถูกต้อง", level: req.cookies.level, username: req.cookies.username});
+// [PAGE] MMguitarView -> shops
+app.get("/MMguitarView/:id", async (req,res) => {
+    try {
+        if (req.cookies.level == 'user') {
+            res.redirect("/");
+        } else if (req.cookies.level == 'admin') {
+            const response = await axios.get(base_url + "/shops/" + req.params.id);
+            res.render("MMguitarView", { shops: response.data, level: req.cookies.level, username: req.cookies.username, Fail: "" });
+        } else {
+            res.redirect("/");
         }
     } catch {
         console.error(err);
-        res.status(500).send('Error management')
+        res.status(500).send('Error MMguitarView')
     }
 })
 
-// createGuitar -> shops
-app.post('/createGuitar', guitar.single('guitarURL'), async (req, res) => {
+// [PAGE] MMguitarEdit -> shops
+app.get("/MMguitarEdit/:id", async (req,res) => {
     try {
-        if (req.body.guitarname == '') {
-            return res.render("management", { Fail: "กรุณาใส่ชื่อ guitar", level: req.cookies.level, username: req.cookies.username});
-        } else if (req.body.price == '') {
-            return res.render("management", { Fail: "กรุณาใส่ price", level: req.cookies.level, username: req.cookies.username});
-        } else if (req.body.detail == '') {
-            return res.render("management", { Fail: "กรุณาใส่ detail", level: req.cookies.level, username: req.cookies.username});
-        } else if (!req.file || !req.file.filename) {
-            return res.render("management", { Fail: "กรุณาใส่รูปภาพ guitar", level: req.cookies.level, username: req.cookies.username});
+        if (req.cookies.level == 'user') {
+            res.redirect("/");
+        } else if (req.cookies.level == 'admin') {
+            const response = await axios.get(base_url + "/shops/" + req.params.id);
+            res.render("MMguitarEdit", { shops: response.data, level: req.cookies.level, username: req.cookies.username, Fail: "" });
+        } else {
+            res.redirect("/");
         }
+    } catch {
+        console.error(err);
+        res.status(500).send('Error MMguitarEdit')
+    }
+})
 
-        const data = {
-            guitarURL: req.file.filename,
-            guitarname: req.body.guitarname,
-            price: req.body.price,
-            detail: req.body.detail
-        };
+// MMguitarEdit2 -> shops
+app.post("/MMguitarEdit2/:id", async (req,res) => {
+    try {
+        if (req.cookies.level == 'user') {
+            res.redirect("/");
+        } else if (req.cookies.level == 'admin') {
+            const data = {
+                guitarname: req.body.guitarname,
+                price: req.body.price,
+                detail: req.body.detail
+            };
+            await axios.put(base_url + '/shops/' + req.params.id, data);
 
-        await axios.post(base_url + '/shops' , data);
-        return res.redirect("/");
+            const response = await axios.get(base_url + "/shops/" + req.params.id);
+            res.redirect("/MMguitarView/" + req.params.id);
+        } else {
+            res.redirect("/");
+        }
+    } catch {
+        console.error(err);
+        res.status(500).send('Error MMguitarEdit')
+    }
+})
+
+// MMguitarDelete -> shops
+app.get('/MMguitarDelete/:id', async (req, res) => {
+    try {
+        if (req.cookies.level == 'user') {
+            res.redirect("/");
+        } else if (req.cookies.level == 'admin') {
+            await axios.delete(base_url + '/shops/' + req.params.id);
+            res.redirect("/management");
+        } else {
+            res.redirect("/");
+        }
     } catch (err) {
         console.error(err);
-        res.status(500).send('Error putIMG');
+        res.status(500).send('Error MMguitarDelete');
     }
 });
+
+// [PAGE] MMchord -> chords
+app.get("/MMchord", async (req,res) => {
+    try {
+        if (req.cookies.level == 'user') {
+            res.redirect("/");
+        } else if (req.cookies.level == 'admin') {
+            const response = await axios.get(base_url + "/chords");
+            res.render("MMchord", { chords: response.data, level: req.cookies.level, username: req.cookies.username, Fail: "" });
+        } else {
+            res.redirect("/");
+        }
+    } catch {
+        console.error(err);
+        res.status(500).send('Error MMchord')
+    }
+})
+
+// MMchordEdit -> chords
+app.get("/MMchordEdit/:id", async (req,res) => {
+    try {
+        if (req.cookies.level == 'user') {
+            res.redirect("/");
+        } else if (req.cookies.level == 'admin') {
+            const response = await axios.get(base_url + "/shops/" + req.params.id);
+            res.render("MMguitarEdit", { shops: response.data, level: req.cookies.level, username: req.cookies.username, Fail: "" });
+        } else {
+            res.redirect("/");
+        }
+    } catch {
+        console.error(err);
+        res.status(500).send('Error MMguitarEdit')
+    }
+})
+
+// [PAGE] MMuser -> accounts
+app.get("/MMuser", async (req,res) => {
+    try {
+        if (req.cookies.level == 'user') {
+            res.redirect("/");
+        } else if (req.cookies.level == 'admin') {
+            const response = await axios.get(base_url + "/accounts");
+            res.render("MMuser", { accounts: response.data, level: req.cookies.level, username: req.cookies.username, Fail: "" });
+        } else {
+            res.redirect("/");
+        }
+    } catch {
+        console.error(err);
+        res.status(500).send('Error MMuser')
+    }
+})
+
+// updateRole -> accounts
+// app.post("/updateRole", async (req,res) => {
+//     try {
+//         if (req.body.username == '') {
+//             return res.render("management", { Fail: "กรุณาใส่ชื่อ user", level: req.cookies.level, username: req.cookies.username});
+//         }
+
+//         const response = await axios.get(base_url + "/accounts");
+//         const accounts = response.data;
+//         let RoleFailed = true; 
+
+//         for (const account of accounts) {
+//             if (req.body.username === account.username) {
+//                 RoleFailed = false; 
+//                 const data = { level: req.body.role };
+//                 await axios.put(base_url + '/accounts/' + account.id_account, data);
+//                 return res.redirect("/");
+//             }
+//         }
+
+//         if (RoleFailed) {
+//             return res.render("management", { Fail: "ไม่สามารถเปลี่ยน Role ได้ username อาจไม่ถูกต้อง", level: req.cookies.level, username: req.cookies.username});
+//         }
+//     } catch {
+//         console.error(err);
+//         res.status(500).send('Error management')
+//     }
+// })
+
+// createGuitar -> shops
+// app.post('/createGuitar', guitar.single('guitarURL'), async (req, res) => {
+//     try {
+//         if (req.body.guitarname == '') {
+//             return res.render("management", { Fail: "กรุณาใส่ชื่อ guitar", level: req.cookies.level, username: req.cookies.username});
+//         } else if (req.body.price == '') {
+//             return res.render("management", { Fail: "กรุณาใส่ price", level: req.cookies.level, username: req.cookies.username});
+//         } else if (req.body.detail == '') {
+//             return res.render("management", { Fail: "กรุณาใส่ detail", level: req.cookies.level, username: req.cookies.username});
+//         } else if (!req.file || !req.file.filename) {
+//             return res.render("management", { Fail: "กรุณาใส่รูปภาพ guitar", level: req.cookies.level, username: req.cookies.username});
+//         }
+
+//         const data = {
+//             guitarURL: req.file.filename,
+//             guitarname: req.body.guitarname,
+//             price: req.body.price,
+//             detail: req.body.detail
+//         };
+
+//         await axios.post(base_url + '/shops' , data);
+//         return res.redirect("/");
+//     } catch (err) {
+//         console.error(err);
+//         res.status(500).send('Error putIMG');
+//     }
+// });
 
 // updateGuitar -> shops
-app.post('/updateGuitar', async (req, res) => {
-    try {
-        if (req.body.guitarname == '') {
-            return res.render("management", { Fail: "กรุณาใส่ชื่อ guitar", level: req.cookies.level, username: req.cookies.username});
-        } else if (req.body.new_guitarname == '') {
-            return res.render("management", { Fail: "กรุณาใส่ชื่อ guitar ใหม่", level: req.cookies.level, username: req.cookies.username});
-        } else if (req.body.price == '') {
-            return res.render("management", { Fail: "กรุณาใส่ price", level: req.cookies.level, username: req.cookies.username});
-        } else if (req.body.detail == '') {
-            return res.render("management", { Fail: "กรุณาใส่ detail", level: req.cookies.level, username: req.cookies.username});
-        }
+// app.post('/updateGuitar', async (req, res) => {
+//     try {
+//         if (req.body.guitarname == '') {
+//             return res.render("management", { Fail: "กรุณาใส่ชื่อ guitar", level: req.cookies.level, username: req.cookies.username});
+//         } else if (req.body.new_guitarname == '') {
+//             return res.render("management", { Fail: "กรุณาใส่ชื่อ guitar ใหม่", level: req.cookies.level, username: req.cookies.username});
+//         } else if (req.body.price == '') {
+//             return res.render("management", { Fail: "กรุณาใส่ price", level: req.cookies.level, username: req.cookies.username});
+//         } else if (req.body.detail == '') {
+//             return res.render("management", { Fail: "กรุณาใส่ detail", level: req.cookies.level, username: req.cookies.username});
+//         }
         
-        const response = await axios.get(base_url + "/shops");
-        const shops = response.data;
-        let guitarFailed = true; 
+//         const response = await axios.get(base_url + "/shops");
+//         const shops = response.data;
+//         let guitarFailed = true; 
 
-        for (const shop of shops) {
-            if (req.body.guitarname === shop.guitarname) {
-                guitarFailed = false; 
-                const data = {
-                    guitarname: req.body.new_guitarname != '' ? req.body.new_guitarname : req.body.guitarname,
-                    price: req.body.price,
-                    detail: req.body.detail
-                };
-                await axios.put(base_url + '/shops/' + shop.id_guitar, data);
-                return res.redirect("/");
-            }
-        }
+//         for (const shop of shops) {
+//             if (req.body.guitarname === shop.guitarname) {
+//                 guitarFailed = false; 
+//                 const data = {
+//                     guitarname: req.body.new_guitarname != '' ? req.body.new_guitarname : req.body.guitarname,
+//                     price: req.body.price,
+//                     detail: req.body.detail
+//                 };
+//                 await axios.put(base_url + '/shops/' + shop.id_guitar, data);
+//                 return res.redirect("/");
+//             }
+//         }
 
-        if (guitarFailed) {
-            return res.render("management", { Fail: "ไม่สามารถแก้ไขข้อมูล guitar ได้ guitarname อาจไม่ถูกต้อง", level: req.cookies.level, username: req.cookies.username});
-        }
-    } catch (err) {
-        console.error(err);
-        res.status(500).send('Error putIMG');
-    }
-});
+//         if (guitarFailed) {
+//             return res.render("management", { Fail: "ไม่สามารถแก้ไขข้อมูล guitar ได้ guitarname อาจไม่ถูกต้อง", level: req.cookies.level, username: req.cookies.username});
+//         }
+//     } catch (err) {
+//         console.error(err);
+//         res.status(500).send('Error putIMG');
+//     }
+// });
 
 // deleteGuitar -> shops
-app.post('/deleteGuitar', async (req, res) => {
-    try {
-        if (req.body.guitarname == '') {
-            return res.render("management", { Fail: "กรุณาใส่ชื่อ guitar", level: req.cookies.level, username: req.cookies.username});
-        } 
+// app.post('/deleteGuitar', async (req, res) => {
+//     try {
+//         if (req.body.guitarname == '') {
+//             return res.render("management", { Fail: "กรุณาใส่ชื่อ guitar", level: req.cookies.level, username: req.cookies.username});
+//         } 
         
-        const response = await axios.get(base_url + "/shops");
-        const shops = response.data;
-        let guitarFailed = true; 
+//         const response = await axios.get(base_url + "/shops");
+//         const shops = response.data;
+//         let guitarFailed = true; 
 
-        for (const shop of shops) {
-            if (req.body.guitarname === shop.guitarname) {
-                guitarFailed = false; 
-                await axios.delete(base_url + '/shops/' + shop.id_guitar);
-                return res.redirect("/");
-            }
-        }
+//         for (const shop of shops) {
+//             if (req.body.guitarname === shop.guitarname) {
+//                 guitarFailed = false; 
+//                 await axios.delete(base_url + '/shops/' + shop.id_guitar);
+//                 return res.redirect("/");
+//             }
+//         }
 
-        if (guitarFailed) {
-            return res.render("management", { Fail: "ไม่สามารถลบ guitar ได้ guitarname อาจไม่ถูกต้อง", level: req.cookies.level, username: req.cookies.username});
-        }
-    } catch (err) {
-        console.error(err);
-        res.status(500).send('Error putIMG');
-    }
-});
+//         if (guitarFailed) {
+//             return res.render("management", { Fail: "ไม่สามารถลบ guitar ได้ guitarname อาจไม่ถูกต้อง", level: req.cookies.level, username: req.cookies.username});
+//         }
+//     } catch (err) {
+//         console.error(err);
+//         res.status(500).send('Error putIMG');
+//     }
+// });
 
 // createChord -> chords
-app.post('/createChord', chord.single('datachord'), async (req, res) => {
-    try {
-        if (req.body.chordname == '') {
-            return res.render("management", { Fail: "กรุณาใส่ชื่อ chord", level: req.cookies.level, username: req.cookies.username});
-        } else if (!req.file || !req.file.filename) {
-            return res.render("management", { Fail: "กรุณาใส่รูปภาพ chord", level: req.cookies.level, username: req.cookies.username});
-        } 
+// app.post('/createChord', chord.single('datachord'), async (req, res) => {
+//     try {
+//         if (req.body.chordname == '') {
+//             return res.render("management", { Fail: "กรุณาใส่ชื่อ chord", level: req.cookies.level, username: req.cookies.username});
+//         } else if (!req.file || !req.file.filename) {
+//             return res.render("management", { Fail: "กรุณาใส่รูปภาพ chord", level: req.cookies.level, username: req.cookies.username});
+//         } 
 
-        const data = {
-            chordname: req.body.chordname,
-            datachord: req.file.filename,
-        };
+//         const data = {
+//             chordname: req.body.chordname,
+//             datachord: req.file.filename,
+//         };
 
-        await axios.post(base_url + '/chords' , data);
-        return res.redirect("/");
-    } catch (err) {
-        console.error(err);
-        res.status(500).send('Error putIMG');
-    }
-});
+//         await axios.post(base_url + '/chords' , data);
+//         return res.redirect("/");
+//     } catch (err) {
+//         console.error(err);
+//         res.status(500).send('Error putIMG');
+//     }
+// });
 
 // deleteChord -> chords
-app.post('/deleteChord', async (req, res) => {
-    try {
-        if (req.body.chordname == '') {
-            return res.render("management", { Fail: "กรุณาใส่ชื่อ chord", level: req.cookies.level, username: req.cookies.username});
-        } 
+// app.post('/deleteChord', async (req, res) => {
+//     try {
+//         if (req.body.chordname == '') {
+//             return res.render("management", { Fail: "กรุณาใส่ชื่อ chord", level: req.cookies.level, username: req.cookies.username});
+//         } 
         
-        const response = await axios.get(base_url + "/chords");
-        const chords = response.data;
-        let chordFailed = true; 
+//         const response = await axios.get(base_url + "/chords");
+//         const chords = response.data;
+//         let chordFailed = true; 
 
-        for (const chord of chords) {
-            if (req.body.chordname === chord.chordname) {
-                chordFailed = false; 
-                await axios.delete(base_url + '/chords/' + chord.id_chord);
-                return res.redirect("/");
-            }
-        }
+//         for (const chord of chords) {
+//             if (req.body.chordname === chord.chordname) {
+//                 chordFailed = false; 
+//                 await axios.delete(base_url + '/chords/' + chord.id_chord);
+//                 return res.redirect("/");
+//             }
+//         }
 
-        if (chordFailed) {
-            return res.render("management", { Fail: "ไม่สามารถลบ chord ได้ chordname อาจไม่ถูกต้อง", level: req.cookies.level, username: req.cookies.username});
-        }
-    } catch (err) {
-        console.error(err);
-        res.status(500).send('Error putIMG');
-    }
-});
+//         if (chordFailed) {
+//             return res.render("management", { Fail: "ไม่สามารถลบ chord ได้ chordname อาจไม่ถูกต้อง", level: req.cookies.level, username: req.cookies.username});
+//         }
+//     } catch (err) {
+//         console.error(err);
+//         res.status(500).send('Error putIMG');
+//     }
+// });
 
 // [PAGE] signUp
 app.get("/signup", async (req, res) => {

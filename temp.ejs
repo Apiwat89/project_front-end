@@ -1,0 +1,69 @@
+<!-- <center>
+        <br>
+        <% if (Fail && Fail.length > 0) { %>
+            <div class="alert alert-danger" role="alert">
+                <%= Fail %>
+            </div>
+        <% } %>
+    
+        <form method="post" action="/updateRole">
+            <div class="box">
+                <p> เปลี่ยน Role User </p>
+                <input type="text" id="username" name="username" placeholder="username">
+                <select name="role" id="role">
+                    <option value="" disabled selected>Role user</option>
+                    <option value="user">user</option>
+                    <option value="admin">admin</option>
+                </select> <br>
+                <input type="submit" value=" OK ">
+            </div>
+        </form>
+        <br><hr>
+        <form method="post" action="/createGuitar" enctype="multipart/form-data">
+            <div class="box">
+                <p> เพิ่ม Guitar </p>
+                <input type="text" id="guitarname" name="guitarname" placeholder="guitarname"> <br>
+                <input type="text" id="price" name="price" placeholder="price" pattern="[0-9]{1,7}"> <br>
+                <input type="text" id="detail" name="detail" placeholder="detail"> <br>
+                <input type="file" id="guitarURL" name="guitarURL"> <br>
+                <input type="submit" value=" OK ">
+            </div>
+        </form>
+        <br><hr>
+        <form method="post" action="/updateGuitar">
+            <div class="box">
+                <p> แก้ไขข้อมูล Guitar </p>
+                <input type="text" id="guitarname" name="guitarname" placeholder="guitarname"> <br>
+                <input type="text" id="new_guitarname" name="new_guitarname" placeholder="new guitarname"> <br>
+                <input type="text" id="price" name="price" placeholder="price" pattern="[0-9]{1,7}"> <br>
+                <input type="text" id="detail" name="detail" placeholder="detail"> <br>
+                <input type="submit" value=" OK ">
+            </div>
+        </form>
+        <br><hr>
+        <form method="post" action="/deleteGuitar">
+            <div class="box">
+                <p> ลบ Guitar </p>
+                <input type="text" id="guitarname" name="guitarname" placeholder="guitarname"> <br>
+                <input type="submit" value=" OK ">
+            </div>
+        </form>
+        <br><hr>
+        <form method="post" action="/createChord" enctype="multipart/form-data">
+            <div class="box">
+                <p> เพิ่ม Chord </p>
+                <input type="text" id="chordname" name="chordname" placeholder="chordname"> <br>
+                <input type="file" id="datachord" name="datachord"> <br>
+                <input type="submit" value=" OK ">
+            </div>
+        </form>
+        <br><hr>
+        <form method="post" action="/deleteChord">
+            <div class="box">
+                <p> ลบ Chord </p>
+                <input type="text" id="chordname" name="chordname" placeholder="chordname"> <br>
+                <input type="submit" value=" OK ">
+            </div>
+        </form>
+        <br>
+    </center> -->

@@ -1,89 +1,82 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Management</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Kanit:ital,wght@0,400;0,700;1,400;1,700&display=swap" rel="stylesheet" />
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <link href="https://fonts.googleapis.com/css2?family=Kanit:ital,wght@0,400;0,700;1,400;1,700&display=swap"
+        rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous" />
     <link rel="stylesheet" href="css/shops.css" type="text/css" />
-    <link rel="shortcut icon" href="../assets/logo.png" type="image/png">
+    <link rel="shortcut icon" href="../assets/logo.png" type="image/png" />
 </head>
+
 <body>
     <%- include('nav.ejs', {level: level, username: username}) -%>
 
-    <center>
-        <br>
-        <% if (Fail && Fail.length > 0) { %>
-            <div class="alert alert-danger" role="alert">
-                <%= Fail %>
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <div class="container">
+            <a class="navbar-brand" href="#">Admin Management Panel</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+                aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/management">Guitar</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/MMchord">Chord</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/MMuser">User</a>
+                    </li>
+                </ul>
             </div>
-        <% } %>
-    
-        <form method="post" action="/updateRole">
-            <div class="box">
-                <p> เปลี่ยน Role User </p>
-                <input type="text" id="username" name="username" placeholder="username">
-                <select name="role" id="role">
-                    <option value="" disabled selected>Role user</option>
-                    <option value="user">user</option>
-                    <option value="admin">admin</option>
-                </select> <br>
-                <input type="submit" value=" OK ">
-            </div>
-        </form>
-        <br><hr>
-        <form method="post" action="/createGuitar" enctype="multipart/form-data">
-            <div class="box">
-                <p> เพิ่ม Guitar </p>
-                <input type="text" id="guitarname" name="guitarname" placeholder="guitarname"> <br>
-                <input type="text" id="price" name="price" placeholder="price" pattern="[0-9]{1,7}"> <br>
-                <input type="text" id="detail" name="detail" placeholder="detail"> <br>
-                <input type="file" id="guitarURL" name="guitarURL"> <br>
-                <input type="submit" value=" OK ">
-            </div>
-        </form>
-        <br><hr>
-        <form method="post" action="/updateGuitar">
-            <div class="box">
-                <p> แก้ไขข้อมูล Guitar </p>
-                <input type="text" id="guitarname" name="guitarname" placeholder="guitarname"> <br>
-                <input type="text" id="new_guitarname" name="new_guitarname" placeholder="new guitarname"> <br>
-                <input type="text" id="price" name="price" placeholder="price" pattern="[0-9]{1,7}"> <br>
-                <input type="text" id="detail" name="detail" placeholder="detail"> <br>
-                <input type="submit" value=" OK ">
-            </div>
-        </form>
-        <br><hr>
-        <form method="post" action="/deleteGuitar">
-            <div class="box">
-                <p> ลบ Guitar </p>
-                <input type="text" id="guitarname" name="guitarname" placeholder="guitarname"> <br>
-                <input type="submit" value=" OK ">
-            </div>
-        </form>
-        <br><hr>
-        <form method="post" action="/createChord" enctype="multipart/form-data">
-            <div class="box">
-                <p> เพิ่ม Chord </p>
-                <input type="text" id="chordname" name="chordname" placeholder="chordname"> <br>
-                <input type="file" id="datachord" name="datachord"> <br>
-                <input type="submit" value=" OK ">
-            </div>
-        </form>
-        <br><hr>
-        <form method="post" action="/deleteChord">
-            <div class="box">
-                <p> ลบ Chord </p>
-                <input type="text" id="chordname" name="chordname" placeholder="chordname"> <br>
-                <input type="submit" value=" OK ">
-            </div>
-        </form>
-        <br>
-    </center>
+        </div>
+    </nav>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+
+    <!-- Add Guitar Button -->
+    <div class="container mt-3">
+        <div class="row">
+            <div class="col-md-12 text-end">
+                <a href="/MMguitarCreate" class="btn btn-success">
+                    <i class="bi bi-plus"></i> + Add Guitar
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="container mt-5">
+        <% for (let i=0; i < shops.length; i++) { %>
+        <div class="row justify-content-between align-items-center border rounded p-3 mb-3">
+            <div class="col-md-6">
+                <h1>
+                    <%= shops[i].guitarname %>
+                </h1>
+                <p>Price : <%= shops[i].price %>
+                </p>
+            </div>
+            <div class="col-md-4">
+                <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                    <a href="/MMguitarView/<%= shops[i].id_guitar %>"><button
+                            class="btn btn-primary me-md-2 mb-2 mb-md-0" type="button">View</button></a>
+                    <a href="/MMguitarDelete/<%= shops[i].id_guitar %>"><button class="btn btn-danger"
+                            type="button">Delete</button></a>
+                </div>
+            </div>
+        </div>
+        <% } %>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.min.js"></script>
 </body>
+
 </html>
