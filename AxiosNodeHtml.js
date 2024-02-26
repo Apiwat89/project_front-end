@@ -216,12 +216,12 @@ app.get('/MMguitarDelete/:id', async (req, res) => {
         if (req.cookies.level == 'user') {
             res.redirect("/");
         } else if (req.cookies.level == 'admin') {
-            const response = await axios.get(base_url + '/list');
+            const response = await axios.get(base_url + '/lists');
             const lists = response.data;
 
             for (let check of lists) {
                 if (check.id_guitar == req.params.id) {
-                    await axios.delete(base_url + '/list/' + check.list);
+                    await axios.delete(base_url + '/lists/' + check.list);
                 }
             }
 
