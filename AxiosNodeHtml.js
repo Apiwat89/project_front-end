@@ -432,8 +432,13 @@ app.get('/MMlist', async (req, res) => {
             res.redirect("/");
         }
     } catch (err) {
-        console.error(err);
-        res.status(500).send('Error MMlist');
+        if (req.cookies.level == 'user') {
+            res.redirect("/");
+        } else if (req.cookies.level == 'admin') {
+            res.render("MMlist", { lists: '', accounts: '', level: req.cookies.level, username: req.cookies.username});
+        } else {
+            res.redirect("/");
+        }
     }
 });
 
