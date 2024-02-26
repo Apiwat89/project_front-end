@@ -15,16 +15,8 @@
     <link rel="shortcut icon" href="../assets/logo.png" type="image/png" />
 </head>
 
-<style>
-    img {
-        width: 500px;
-        height: auto;
-    }
-</style>
-
 <body>
     <%- include('nav.ejs', {level: level, username: username}) -%>
-
         <nav class="navbar navbar-expand-lg navbar-light bg-light">
             <div class="container">
                 <a class="navbar-brand" href="#">Admin Management Panel</a>
@@ -53,20 +45,38 @@
 
         <div class="container mt-5">
             <div class="row justify-content-center">
-                <div class="col-md-8">
+                <div class="col-md-6">
                     <div class="card">
-                        <div class="card-header">Guitar Details</div>
+                        <div class="card-header">
+                            Edit User
+                        </div>
                         <div class="card-body">
-                            <img src="../pictures/Guitar/<%= shops.guitarURL %>" alt="Guitar Image">
-                            <h5 class="card-title">
-                                <%= shops.guitarname %>
-                            </h5>
-                            <p class="card-text">Price: <%= shops.price %>
-                            </p>
-                            <p class="card-text">Description: <%= shops.detail %>
-                            </p>
-                            <a href="/MMguitarEdit/<%= shops.id_guitar %>" class="btn btn-primary">Edit</a>
-                            <a href="/MMguitarDelete/<%= shops.id_guitar %>" class="btn btn-danger">Delete</a>
+                            <form action="/MMuserEdit2/<%= accounts.id_account %>" method="POST">
+                                <div class="mb-3">
+                                    <label for="username" class="form-label">Username</label>
+                                    <input type="text" class="form-control" id="username" name="username"value="<%= accounts.username %>">
+                                </div>
+                                <br>
+                                <div class="mb-3">
+                                    <label for="password" class="form-label">Password</label>
+                                    <input type="text" class="form-control" id="password" name="password"value="<%= accounts.password %>">
+                                </div>
+                                <br>
+                                <div class="mb-3">
+                                    <label for="level" class="form-label">User Level</label>
+                                    <select class="form-select" aria-label="Default select example" id="level" name="level">
+                                        <option selected><%= accounts.level %></option>
+                                        <% if (accounts.level == 'user') { %>
+                                            <option value="admin">admin</option>
+                                        <% } else if (accounts.level == 'admin') { %>
+                                            <option value="user">user</option>
+                                        <% } %>
+                                      </select>
+                                </div>
+                                <br>
+                                <button type="submit" class="btn btn-primary">Save Changes</button>
+                                <a href="/MMchordDelete/<%= accounts.id_chord %>" class="btn btn-danger ms-2">Delete</a>
+                            </form>
                         </div>
                     </div>
                 </div>
@@ -75,6 +85,5 @@
 
         <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.min.js"></script>
-</body>
-
+    </body>
 </html>
